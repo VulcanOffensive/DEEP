@@ -4,10 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DeepApplication {
-
+public class Startup {
     public static void main(String[] args) {
-        SpringApplication.run(DeepApplication.class, args);
+        SpringApplication.run(Startup.class, args);
     }
-
 }
