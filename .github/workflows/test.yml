@@ -16,7 +16,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: testdb
+          POSTGRES_DB: test-project-deep-api
         ports:
           - 5432:5432
 
