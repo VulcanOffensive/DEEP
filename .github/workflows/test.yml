@@ -2,16 +2,25 @@ name: Java CI Test with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+
+env:
+  SPRING_PROFILES_ACTIVE: test
+  SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/test-project-deep-api
+  SPRING_DATASOURCE_USERNAME: postgres
+  SPRING_DATASOURCE_PASSWORD: password
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17' ]
+        java: [ '17', '20' ]
+      fail-fast: false
 
     services:
       postgres:
@@ -22,29 +31,43 @@ jobs:
           POSTGRES_DB: test-project-deep-api
         ports:
           - 5432:5432
-
-    env:
-      SPRING_PROFILES_ACTIVE: test
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/test-project-deep-api
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+      sonarqube:
+        image: sonarqube:latest
+        ports:
+          - 9000:9000
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build with Maven
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Build and Test
         run: mvn -B verify --file pom.xml
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload Coverage Reports
         uses: codecov/codecov-action@v3
         with:
           files: target/site/jacoco/jacoco.xml
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Wait for SonarQube to start
+        run: |
+          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:9000/api/system/status)" != "200" ]]; do 
+            sleep 5; 
+          done
+
+      - name: Run SonarQube Analysis
+        run: mvn sonar:sonar -Dsonar.host.url=http://localhost:9000
