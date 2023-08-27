@@ -13,10 +13,11 @@
     <artifactId>DEEP</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>DEEP</name>
-    <description>DEEP</description>
+    <description>Fast, robust and powerful! The AI for criminal forensics.</description>
 
     <properties>
         <java.version>17</java.version>
+        <openai-gpt3-java.version>0.16.0</openai-gpt3-java.version>
         <lombok.version>1.18.28</lombok.version>
         <junit5.version>5.10.0</junit5.version>
     </properties>
@@ -36,6 +37,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>client</artifactId>
+            <version>${openai-gpt3-java.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
