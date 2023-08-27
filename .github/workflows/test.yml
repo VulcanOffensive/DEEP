@@ -31,10 +31,6 @@ jobs:
           POSTGRES_DB: test-project-deep-api
         ports:
           - 5432:5432
-      sonarqube:
-        image: sonarqube:latest
-        ports:
-          - 9000:9000
 
     steps:
       - name: Checkout Code
@@ -62,12 +58,3 @@ jobs:
         with:
           files: target/site/jacoco/jacoco.xml
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Wait for SonarQube to start
-        run: |
-          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:9000/api/system/status)" != "200" ]]; do 
-            sleep 5; 
-          done
-
-      - name: Run SonarQube Analysis
-        run: mvn sonar:sonar -Dsonar.host.url=http://localhost:9000
