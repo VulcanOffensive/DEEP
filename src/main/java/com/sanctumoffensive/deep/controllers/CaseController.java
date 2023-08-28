@@ -2,7 +2,7 @@ package com.sanctumoffensive.deep.controllers;
 
 import com.sanctumoffensive.deep.dtos.CaseRecordDTO;
 import com.sanctumoffensive.deep.models.CaseModel;
-import com.sanctumoffensive.deep.repositories.CaseRepository;
+import com.sanctumoffensive.deep.services.CaseServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,73 +11,57 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class CaseController {
 
     @Autowired
-    CaseRepository caseRepository;
+    private CaseServiceImpl caseService;
 
     @PostMapping("/cases")
     public ResponseEntity<CaseModel> saveCase(@RequestBody @Valid CaseRecordDTO caseRecordDTO) {
-        var caseModel = new CaseModel();
-        BeanUtils.copyProperties(caseRecordDTO, caseModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(caseRepository.save(caseModel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(caseService.saveCase(caseRecordDTO));
     }
 
     @GetMapping("/cases")
     public ResponseEntity<List<CaseModel>> getAllCases() {
-        List<CaseModel> caseList = caseRepository.findAll();
-        if (!caseList.isEmpty()) {
-            for (CaseModel caseModel : caseList) {
-                UUID id = caseModel.getIdCase();
-                caseModel.add(linkTo(methodOn(CaseController.class).getOneCase(id)).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(caseList);
+        return ResponseEntity.status(HttpStatus.OK).body(caseService.getAllCases());
     }
 
     @GetMapping("/cases/{id}")
     public ResponseEntity<Object> getOneCase(@PathVariable(value = "id") UUID id) {
-        Optional<CaseModel> thisCase = caseRepository.findById(id);
+        var thisCase = caseService.getOneCase(id);
 
-        if (thisCase.isEmpty()) {
+        if (thisCase == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Case not found.");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(thisCase);
         }
-
-        thisCase.get().add(linkTo(methodOn(CaseController.class).getAllCases()).withRel("Cases List"));
-        return ResponseEntity.status(HttpStatus.OK).body(thisCase.get());
     }
 
     @PutMapping("/cases/{id}")
     public ResponseEntity<Object> updateCase(@PathVariable(value = "id") UUID id,
                                              @RequestBody @Valid CaseRecordDTO caseRecordDTO) {
 
-        Optional<CaseModel> thisCase = caseRepository.findById(id);
+        var thisCase = caseService.getOneCase(id);
 
-        if (thisCase.isEmpty()) {
+        if (thisCase == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Case not found.");
+        } else {
+            BeanUtils.copyProperties(caseRecordDTO, thisCase);
+            return ResponseEntity.status(HttpStatus.OK).body(caseService.updateCase(id, caseRecordDTO));
         }
-
-        var caseModel = thisCase.get();
-        BeanUtils.copyProperties(caseRecordDTO, caseModel);
-        return ResponseEntity.status(HttpStatus.OK).body(caseRepository.save(caseModel));
     }
 
     @DeleteMapping("/cases/{id}")
     public ResponseEntity<Object> deleteCase(@PathVariable(value = "id") UUID id) {
-        Optional<CaseModel> thisCase = caseRepository.findById(id);
+        var thisCase = caseService.deleteCase(id);
 
-        if (thisCase.isEmpty()) {
+        if (thisCase == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Case not found.");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(thisCase);
         }
-
-        caseRepository.delete(thisCase.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Case deleted successfully.");
     }
 }
