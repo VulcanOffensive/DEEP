@@ -9,36 +9,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class CaseServiceImplTest {
 
     @InjectMocks
-    CaseServiceImpl caseServiceImpl;
+    private CaseServiceImpl caseServiceImpl;
 
     @Mock
-    CaseRepository caseRepository;
+    private CaseRepository caseRepository;
 
-    CaseModel caseModel;
-    CaseRecordDTO caseRecordDTO;
+    private CaseModel caseModel;
+    private CaseRecordDTO caseRecordDTO;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         caseRecordDTO = new CaseRecordDTO("Test Case", "Test Description", "Test Context");
-
         caseModel = new CaseModel();
         caseModel.setIdCase(UUID.randomUUID());
     }
 
     @Test
-    void testSaveCase() {
+    public void testSaveCase() {
         // Stub the save method to return the caseModel we created
         when(caseRepository.save(caseModel)).thenReturn(caseModel);
 
@@ -53,7 +50,7 @@ public class CaseServiceImplTest {
     }
 
     @Test
-    void testGetAllCases() {
+    public void testGetAllCases() {
         // Stub the findAll method to return a list containing the caseModel we created
         when(caseRepository.findAll()).thenReturn(java.util.List.of(caseModel));
 
@@ -69,7 +66,7 @@ public class CaseServiceImplTest {
 
 
     @Test
-    void testGetOneCase() {
+    public void testGetOneCase() {
         var id = caseModel.getIdCase();
 
         // Stub the findById method to return the caseModel we created
@@ -86,7 +83,7 @@ public class CaseServiceImplTest {
     }
 
     @Test
-    void testUpdateCase() {
+    public void testUpdateCase() {
         var id = caseModel.getIdCase();
 
         // Stub the findById method to return the caseModel we created
@@ -109,7 +106,7 @@ public class CaseServiceImplTest {
     }
 
     @Test
-    void testDeleteCase() {
+    public void testDeleteCase() {
         var id = caseModel.getIdCase();
 
         // Stub the findById method to return the caseModel we created
@@ -119,7 +116,7 @@ public class CaseServiceImplTest {
         doNothing().when(caseRepository).delete(caseModel);
 
         // Assert that the returned case is the same as the one we created
-        assertEquals("Case deleted successfully." , caseServiceImpl.deleteCase(id));
+        assertEquals("Case deleted successfully.", caseServiceImpl.deleteCase(id));
 
         // Verify that the findById method was called exactly once
         verify(caseRepository).findById(id);
