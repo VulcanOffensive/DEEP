@@ -9,7 +9,6 @@ on:
       - main
 
 env:
-  ACTIVE_PROFILE: test
   TEST_DB_USERNAME: postgres
   TEST_DB_PASSWORD: password
   TEST_DB_NAME: test-project-deep-api
@@ -53,6 +52,7 @@ jobs:
 
       - name: Build and Test
         env:
+          SPRING_PROFILES_ACTIVE: test
           TEST_DB_CONNECTION_URL: jdbc:postgresql://localhost:${{ env.TEST_DB_PORT }}/${{ env.TEST_DB_NAME }}
         run: mvn -B verify --file pom.xml
 
