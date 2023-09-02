@@ -9,10 +9,12 @@ on:
       - main
 
 env:
-  SPRING_PROFILES_ACTIVE: test
-  SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/test-project-deep-api
-  SPRING_DATASOURCE_USERNAME: postgres
-  SPRING_DATASOURCE_PASSWORD: password
+  ACTIVE_PROFILE: test
+  TEST_DB_USERNAME: postgres
+  TEST_DB_PASSWORD: password
+  TEST_DB_NAME: test-project-deep-api
+  TEST_DB_PORT: 5432
+  TEST_DB_CONNECTION_URL: jdbc:postgresql://localhost:${{ env.TEST_DB_PORT }}/${{ env.TEST_DB_NAME }}
 
 jobs:
   build:
@@ -26,11 +28,11 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test-project-deep-api
+          POSTGRES_USER: ${{ env.TEST_DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.TEST_DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.TEST_DB_NAME }}
         ports:
-          - 5432:5432
+          - ${{ env.TEST_DB_PORT }}:${{ env.TEST_DB_PORT }}
 
     steps:
       - name: Checkout Code
