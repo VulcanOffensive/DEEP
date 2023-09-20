@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <openai-gpt3-java.version>0.16.0</openai-gpt3-java.version>
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <junit5.version>5.10.0</junit5.version>
     </properties>
 
