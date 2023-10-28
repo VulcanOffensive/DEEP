@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${DEV_DB_CONNECTION_URL:jdbc:postgresql://localhost:5432/dev-project-deep-api}
+    username: ${DEV_DB_USERNAME:postgres}
+    password: ${DEV_DB_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
