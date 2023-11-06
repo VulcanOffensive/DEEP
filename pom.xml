@@ -19,7 +19,7 @@
         <java.version>17</java.version>
         <openai-gpt3-java.version>0.16.1</openai-gpt3-java.version>
         <lombok.version>1.18.30</lombok.version>
-        <junit5.version>5.10.0</junit5.version>
+        <junit5.version>5.10.1</junit5.version>
     </properties>
 
     <dependencies>
